@@ -37,6 +37,8 @@ export class ConstellationSky extends LitElement {
     degRotate: { type: Number, attribute: 'deg-rotate' },
     constellationName: { type: String, attribute: 'constellation-name' },
     constellationScale: { type: Number, attribute: 'constellation-scale' },
+    maxStarSize: { type: Number, attribute: 'max-star-size' },
+    minStarSize: { type: Number, attribute: 'min-star-size' },
   };
 
   constructor() {
@@ -48,6 +50,8 @@ export class ConstellationSky extends LitElement {
     this.drawLines = false;
     this.hexStarColor = '#ffffff';
     this.degRotate = 0;
+    this.minStarSize = 2;
+    this.maxStarSize = 10;
   }
 
   firstUpdated() {
@@ -77,9 +81,9 @@ export class ConstellationSky extends LitElement {
     return { r, g, b };
   }
 
-  static calculateStarSizeByMagnitude(magnitude) {
-    const maxSize = 10;
-    const minSize = 2;
+  calculateStarSizeByMagnitude(magnitude) {
+    const maxSize = this.maxStarSize;
+    const minSize = this.minStarSize;
     const size = maxSize - (magnitude / 5) * (maxSize - minSize);
     return Math.max(minSize, Math.min(size, maxSize));
   }
@@ -96,7 +100,7 @@ export class ConstellationSky extends LitElement {
   drawConstellationStars(ctx, constellation) {
     const scale = this.constellationScale;
     constellation.stars.forEach(star => {
-      const size = ConstellationSky.calculateStarSizeByMagnitude(star.magnitude);
+      const size = this.calculateStarSizeByMagnitude(star.magnitude);
       const starColor = this.colorIntensityByMagnitude(star.magnitude);
       ctx.beginPath();
       ctx.arc(star.x * scale, star.y * scale, size, 0, 2 * Math.PI);
